@@ -1,13 +1,18 @@
-import java.util.NoSuchElementException;
 
-public class Deque<Item> {
+import java.util.NoSuchElementException;
+import java.util.Iterator;
+import java.lang.UnsupportedOperationException;
+import java.lang.NullPointerException;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+public class Deque<Item> implements Iterable<Item> {
 	private int Size;
-	private Node first;
-	private Node last;
-	private class Node {
-		Node next;
-		Node previous;
-		Item item;
+	private Node<Item> first;
+	private Node<Item> last;
+	private static class Node<Item> {
+		Node<Item> next;
+		Node<Item> previous;
+		private Item item;
 	}
     public Deque() {
 	   // construct an empty deque
@@ -24,8 +29,9 @@ public class Deque<Item> {
     }
     public void addFirst(Item item) {
 	   // add the item to the front
-    	Node oldFirst = first;
-    	first = new Node();
+    	if (item == null) throw new NullPointerException();
+    	Node<Item> oldFirst = first;
+    	first = new Node<Item>();
     	first.item = item;
     	if (isEmpty()) {
     		last = first;
@@ -39,8 +45,9 @@ public class Deque<Item> {
     }
     public void addLast(Item item) {
 	   // add the item to the end
-    	Node oldLast = last;
-    	last = new Node();
+    	if (item == null) throw new NullPointerException();
+    	Node<Item> oldLast = last;
+    	last = new Node<Item>();
     	last.item = item;
     	last.next = null;
     	if (isEmpty()) first = last;
@@ -77,16 +84,38 @@ public class Deque<Item> {
 
     	
     }
-
+    
+    public Iterator<Item> iterator() {
+    	return new DequeIterator(first);
+    }
+    
+    private class DequeIterator implements Iterator<Item> {
+    	private Node<Item> current;
+        public DequeIterator(Node<Item> first) {
+            current = first;
+        }
+    	public boolean hasNext() { return current != null;}
+    	public void remove() {throw new UnsupportedOperationException();}
+    	
+    	public Item next() {
+    		if(!hasNext()) throw new NoSuchElementException();
+    		Item item = current.item;
+    		current = current.next;
+    		return item;
+    	}
+    }
     public static void main(String[] args) {
 	   // unit testing (optional)
-    	Deque deque = new Deque();
-    	deque.addFirst(5);
-    	deque.addFirst(4);
-    	System.out.println(deque.removeFirst());
-    	deque.addLast(7);
-    	System.out.println(deque.removeFirst());
-    	System.out.println(deque.removeFirst());
+    	Deque<Integer> deque = new Deque<Integer>();
+	    for (int i = 0; i < 10; i++){
+		   Integer item= StdIn.readInt();
+		   deque.addFirst(item);
+		}
+    	Iterator<Integer> i = deque.iterator();
+    	while (i.hasNext()) {
+    		Integer s= i.next();
+    		StdOut.println(s);
+    	}
     	
     }
 }

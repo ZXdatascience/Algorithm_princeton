@@ -1,16 +1,14 @@
 import java.util.NoSuchElementException;
 import java.util.Iterator;
-import java.lang.UnsupportedOperationException;
-import java.lang.NullPointerException;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 public class RandomizedQueue<Item> implements Iterable<Item> {
 	private Item[] q;
 	private int size;
-    public RandomizedQueue(int capacity) {
+    public RandomizedQueue() {
 	   // construct an empty deque
-        q = (Item[]) new Object[capacity];
+        q = (Item[]) new Object[1];
     }
    
    public boolean isEmpty() {
@@ -37,7 +35,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	   Item item = q[randNumber];
 	   q[randNumber] = q [size-1];
 	   q[size-1] = null;
-	   if (size>0 && size == q.length/4) resize(q.length/2);
+	   if (size > 0 && size == q.length/4) resize(q.length/2);
 	   size--;
 	   return item;
    }
@@ -55,6 +53,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
    
    public Item sample() {
 	   // return (but do not remove) a random item
+	   if (isEmpty()) throw new NoSuchElementException();
 	   int randNumber = randSelect();
 	   return q[randNumber];
    }
@@ -66,26 +65,41 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
    
    private class RandomizedQueueIterator implements Iterator<Item> {
 	   private int i = 0;
-	   public boolean hasNext() { return i <size;}
-	   public void remove() {throw new UnsupportedOperationException();}
+	   Item[] copy = (Item[]) new Object[size];
+	   private RandomizedQueueIterator() {
+		   for (int i = 0; i < size; i++) {
+			   copy[i] = q[i];
+		   }
+	   }
+	   public boolean hasNext() { return i < size; }
+	   public void remove() { throw new UnsupportedOperationException(); }
 	   public Item next() {
-		   return q[i++];
+		   if (!hasNext()) throw new NoSuchElementException();
+		   int randNum = StdRandom.uniform(size - i);
+		   Item item = copy[randNum];
+		   copy[randNum] = copy[size - i -1];
+		   i++;
+		   return item;
 	   }
    }
    
    public static void main(String[] args) {
 	   // unit testing (optional)
-	   RandomizedQueue<String> randQue = new RandomizedQueue<String>(10);
-	   for (int i = 0; i < 10; i++){
-		   String item= StdIn.readString();
+	   RandomizedQueue<String> randQue = new RandomizedQueue<String>();
+	   for (int i = 0; i < 10; i++) {
+		   String item = StdIn.readString();
 		   randQue.enqueue(item);
 		}
    	   Iterator<String> i = randQue.iterator();
 	   while (i.hasNext()) {
-		   String s= i.next();
+		   String s = i.next();
 		   StdOut.println(s);
 	    }
-	   StdOut.println(randQue.dequeue());
-	   StdOut.println(randQue.dequeue());
+	   StdOut.println("fengexian----");
+   	   Iterator<String> j = randQue.iterator();
+	   while (j.hasNext()) {
+		   String s_ = j.next();
+		   StdOut.println(s_);
+	    }
    }
 }

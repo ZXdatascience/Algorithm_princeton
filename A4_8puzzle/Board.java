@@ -95,17 +95,27 @@ public class Board {
     }
     public boolean equals(Object y) {
     	// does this board equal y?
-    	if (y == null) return false;
-    	Board board2 = (Board) y;
-    	if (dim != board2.dim) return false;
-    	else {
-        	for (int i = 0; i < dim; i++) {
-        		for (int j = 0; j < dim; j++) {
-        			if (board[i][j] != board2.board[i][j]) return false;
-            		}
-        	}
-        	return true;
-    	}
+		if (this == y) {
+			return true;
+		}
+		if (y == null) {
+			return false;
+		}
+		if (this.getClass() != y.getClass()) {
+			return false;
+		}
+		Board that = (Board) y;
+		if (this.dim != that.dim) {
+			return false;
+		}
+		for (int row = 0; row < dim; row++) {
+			for (int col = 0; col < dim; col++) {
+				if (this.board[row][col] != that.board[row][col]) {
+					return false;
+				}
+			}
+		}
+        return true;
 
     }
     public Iterable<Board> neighbors() {

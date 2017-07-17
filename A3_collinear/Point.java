@@ -1,12 +1,11 @@
 import java.util.Comparator;
+
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Point implements Comparable<Point> {
-
     private final int x;     // x-coordinate of this point
     private final int y;     // y-coordinate of this point
-
     /**
      * Initializes a new point.
      *
@@ -83,22 +82,18 @@ public class Point implements Comparable<Point> {
      *
      * @return the Comparator that defines this ordering on points
      */
+
     public Comparator<Point> slopeOrder() {
-        /* YOUR CODE HERE */
-    	final Comparator<Point> slopeComparator = new bySlope(x, y);
-    	return slopeComparator;
+        return new Comparator<Point>() {
+            @Override
+            public int compare(Point o1, Point o2) {
+                return Double.compare(slopeTo(o1), slopeTo(o2));
+                
+            }
+        };
     }
-    
-    private static class bySlope extends Point implements Comparator<Point> {
-    	bySlope(int x, int y){
-    		super(x, y);
-    	}
-    	public int compare(Point A, Point B) {
-    		if (this.slopeTo(A) < this.slopeTo(B)) return -1;
-    		else if (this.slopeTo(A) > this.slopeTo(B)) return +1;
-    		else return 0;
-    	}
-    }
+
+
 
     /**
      * Returns a string representation of this point.
@@ -117,10 +112,11 @@ public class Point implements Comparable<Point> {
      */
     public static void main(String[] args) {
         /* YOUR CODE HERE */
-    	Point point1 = new Point(1,1);
-    	Point point2 = new Point(2,2);
-    	Point point3 = new Point(4,4);
-    	Comparator<Point> comparator = point1.slopeOrder();
-    	StdOut.println(comparator.compare(point2, point3));
+    	Point point1 = new Point(328, 135);
+    	Point point2 = new Point(373, 241);
+    	Point point3 = new Point(223, 489);
+    	StdOut.println(point1.slopeTo(point1));
     }
+
+
 }

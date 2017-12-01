@@ -1,0 +1,87 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf100
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 1. Minimum spanning tree\
+Given Undirected graph G with positive edge weights(connected)\
+\
+Def:\
+A spanning tree of G is a subgraph T that is both a tree(connected and acyclic) and spanning(includes ALL of the vertices)\
+\
+Goal:\
+Find a min weight spanning tree.(sum of weights on the edges)\
+\
+2. Greedy Algorithm\
+\
+2.1 Cut property\
+Def:\
+A cut in a graph is a partition of its vertices into two (nonempty) sets\
+A crossing edge connects a vertex in one set with a vertex in the other.\
+\
+Cut property: Given any cut, the crossing edge of min weight is in the MST\
+\
+2.2 Greedy MST: Efficient implementations\
+Choose cut? Find min-weight edge?\
+\
+Q1. Graph not connected?\
+Find minimum spanning forest (minimum spanning tree in each connected component)\
+Q2. Edge with equal weight?\
+Still correct, but a little bit more complex for the proof of correctness.\
+\
+3. Edge-Weighted Graph API\
+Public class Edge implements Comparable<Edge>:\
+		Edge(int v, int w, double weight)\
+	int either()\
+	int other(int v)\
+	int compareTo(Edge that)\
+\
+Ex.  Int v = e.either()\
+	w = e.other(v)  ###Access an edge\
+\
+Public class EdgeWeightedGraph:\
+	private Bag<Edge>[] = new Bag<Edge>[V]()\
+		EdgeWeightedGraph(int V)\
+	void addEdge(Edge e)\
+	Iterable<Edge> adj(int v)\
+\
+Public class MST:\
+		MST(EdgeWeightedGraph G) ### here build the MST from the weighted graph\
+	Iterable<Edge> edges()\
+	double weight()\
+	\
+4.Kruskal\'92s algorithm\
+1). Sort the edges by the weight in ascending order.\
+2). Add edges using the order, if one edge create a cycle, then just ignore this edge.\
+3). Continue till the MST is formed.\
+\
+How to find the cycle?\
+Union-Find\
+\
+5. Prim\'92s algorithm\
+1). Start with vertex 0 and greedily grow tree T.\
+2). Add to T the min weight with exactly one endpoint in T.\
+3). Repeat until V-1 edges.\
+\
+How to find the min edge? \
+1). lazy implementation\
+Each time when adding a new node to the tree, also add the nodes that are adjacent to this node to the priority queue. In the adding process, ignore the edges that are already in the priority queue. Then   pop the min edge from the priority queue. If the edge connect to exactly one endpoint of the tree, add this edge to the tree, add adjacent nodes of this node to the PQ.\
+\
+2). Eager implementation\
+Each time when adding a new node, also add the vertices  as well as the corresponding edge that are adjacent to this vertex to the PQ. If the vertex already in the PQ, update its weight if the edge has smaller weight.  Then pop the vertex and the corresponding edge and add it to the MST. Add the adjacent vertices to the PQ, and update if necessary.\
+\
+!!!! Because of the update of the weight of the vertex, you have to use indexPQ to implement the decrease key operation.\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+}

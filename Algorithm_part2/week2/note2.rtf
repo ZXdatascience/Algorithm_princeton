@@ -1,0 +1,79 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf100
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 1. Shortest Path Property\
+\
+Observation: A shortest paths tree solution exists.  \
+\
+Edge relaxation\
+If e = v to w, gives shorter path to w through v, update both distTo[w] and edgeTo[w]\
+\
+SP optimality conditions\
+Proposition:\
+G: edge-weighted digraph\
+Then distTo[] are the shortest path from s iff:\
+1. distTo[s] = 0\
+2.For each vertex v, distTo[v] is the length of some path from s to v.\
+3.For each edge e = v to w, distTo[w] <= distTo[v] + e.weight(). !!**\
+\
+As long as the optimality conditions holds, it is guaranteed that this is the shortest path that can be found.\
+\
+Deciding what algorithm to use depends on how to choose the edges in the process of the algorithm.\
+\
+2. Dijkstra\'92s algorithm\
+* Consider vertices in increasing order of distance from s.\
+* Add vertex to tree and relax all edges pointing from that vertex.\
+\
+The relax operation:\
+Check the third optimality condition, if <, then update the distTo[] and decrease key of PQ.\
+\
+Dijkstra\'92s and Prim\'92s algorithm is essentially the same algorithm. \
+Both are in a family of algorithms that compute a graph\'92s spanning tree.\
+\
+The difference lies in the way they choose the vertices. The Prim\'92s choose the vertex that is the closet to the current tree(undirected). While the Dijkstra\'92s choose the vertex that is the closet to the source(directed) vertex.\
+\
+The time complexity analysis is the same with Prim\'92s.\
+V insert,		V delete-min		E decrease key (worst case)\
+The real time spent depend on the implementation of different priority queue.\
+\
+\
+3. Edge weighted DAG\
+DAG is easier to find the shortest path than in a general digraph.\
+\
+* Consider vertices in topological order (As it is Acyclic)\
+* Relax all edges pointing from that vertex.\
+\
+Topological sort algorithm computes SPT in ANY(the weight can be negative) edge-weighted DAG in time proportional to E+V. \
+\
+Longest paths in edge-weighted DAGs(As it is applicable for negative weights).\
+* Negate all weights\
+* Find shortest paths\
+* Negate weights in result.\
+\
+Application:\
+Parallel job scheduling\
+\
+4. Negative weights\
+A negative cycle is a directed cycle whose sum of edge weights is negative.\
+Proposition: A SPT exists iff no negative cycles.\
+Beller \
+run V passes of relax all the v vertices from all edges.\
+\
+If there is a negative cycle, bellman-ford gets stuck in loop, updating distTo[] and edgeTo[] entries of vertices in the cycle.\
+\
+Proposition. If any vertex v is updated in phase v, there exists a negative cycle(and can trace back edgeTo[v] entries to find it).\
+\
+Negative cycle application: arbitrage detection\
+To earn money from currency exchange.\
+\
+\
+\
+\
+\
+\
+\
+}

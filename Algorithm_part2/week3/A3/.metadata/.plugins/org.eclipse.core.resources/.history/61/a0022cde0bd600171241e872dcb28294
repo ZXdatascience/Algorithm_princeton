@@ -1,0 +1,165 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.princeton.cs.algs4.FlowEdge;
+import edu.princeton.cs.algs4.FlowNetwork;
+import edu.princeton.cs.algs4.FordFulkerson;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+public class BaseballElimination {
+	private int numOfTeams;
+	final private int[] win;
+	final private int[] lose;
+	final private int[] remain;
+	final private int[][] remainMatrix;
+	private String[] teamName;
+	private Map<String, Integer> nameMap = new HashMap<String, Integer>();
+	private ArrayList<Integer> notEliminatedTeams;
+	
+	public BaseballElimination(String filename) {
+		// create a baseball division from given filename in format specified below
+		In in = new In(filename);
+		numOfTeams = Integer.valueOf(in.readLine());
+		win = new int[numOfTeams];
+		lose = new int[numOfTeams];
+		remain = new int[numOfTeams];
+		remainMatrix = new int[numOfTeams][numOfTeams];
+		teamName = new String[numOfTeams];
+		for (int i=0; i<numOfTeams; i++) {
+			String[] eachRecord = in.readLine().split(" +");
+			teamName[i] = eachRecord[0];
+			nameMap.put(eachRecord[0], i);
+			win[i] = Integer.valueOf(eachRecord[1]);
+			lose[i] = Integer.valueOf(eachRecord[2]);
+			remain[i] = Integer.valueOf(eachRecord[3]);
+			for (int j = i + 1; j < numOfTeams; j++) {
+				remainMatrix[i][j] = Integer.valueOf(eachRecord[j + 4]);
+			}
+		}
+		notEliminatedTeams = notEliminated();
+		
+	}
+	
+	private ArrayList<Integer> notEliminated() {
+		int maxWin = 0;
+		ArrayList<Integer> lis = new ArrayList<Integer>();
+		for (int i = 0; i < numOfTeams; i++) {
+			if (win[i] > maxWin) {
+				maxWin = win[i];
+			}
+		}
+		for (int i = 0; i < numOfTeams; i++) {
+			if (win[i] + remain[i] >= maxWin) {
+				lis.add(i);
+			}
+		}
+		return lis;
+	}
+	public int numberOfTeams() {
+		// number of teams
+		return numOfTeams;
+	}
+	public Iterable<String> teams() {
+		// all teams
+		Iterable<String> iterable = Arrays.asList(teamName);
+		return iterable;
+	}
+	public int wins(String team) {
+		// number of wins for given team
+		return win[nameMap.get(team)];
+	}
+	public int losses(String team) {
+		// number of losses for given team
+		return lose[nameMap.get(team)];
+	}
+	public int remaining(String team) {
+		// number of remaining games for given team
+		return remain[nameMap.get(team)];
+	}
+	public int against(String team1, String team2) {
+		// number of remaining games between team1 and team2
+		return remainMatrix[nameMap.get(team1)][nameMap.get(team2)];
+	}
+	public boolean isEliminated(String team) {
+		// is given team eliminated?
+		// first is to eliminate the teams that are trivially eliminated.
+		if (!notEliminatedTeams.contains(nameMap.get(team))) return true;
+		else {
+			ArrayList<Integer> otherTeams = (ArrayList<Integer>) notEliminatedTeams.clone();
+			otherTeams.remove(nameMap.get(team));
+			int totalAgainstEachOther = 0;
+			for (int i = 0; i < otherTeams.size(); i++) {
+				for (int j = i + 1; j< otherTeams.size(); j++) {
+					totalAgainstEachOther += remainMatrix[otherTeams.get(i)][otherTeams.get(j)];
+				}
+				
+			}
+			FlowNetwork g = constructGraph(team, otherTeams);
+			FordFulkerson ff = new FordFulkerson(g, 0, g.V() - 1);
+			boolean res = (ff.value() == totalAgainstEachOther);
+			return !res;
+		}
+	}
+	private FlowNetwork constructGraph(String team, ArrayList<Integer> otherTeams) {
+		int numOfOtherTeams = otherTeams.size();
+		int numOfV = (numOfOtherTeams) * (numOfOtherTeams - 1) / 2 + 2 + numOfOtherTeams;
+		FlowNetwork graph = new FlowNetwork(numOfV);
+		int count = 1;
+		for (int i = 0; i < numOfOtherTeams; i++) {
+			for (int j = i + 1; j < numOfOtherTeams; j++) {
+				FlowEdge gameEdge = new FlowEdge(0, count, remainMatrix[otherTeams.get(i)][otherTeams.get(j)]);
+				graph.addEdge(gameEdge);
+				for (int k = 0; k < numOfOtherTeams; k++) {
+					int otherTeamV = graph.V() - 1 - numOfOtherTeams + k;
+					FlowEdge winSideEdge = new FlowEdge(count, otherTeamV, Double.MAX_VALUE);
+					graph.addEdge(winSideEdge);
+				}
+				count++;
+			}
+			int startVToEnd = (numOfOtherTeams) * (numOfOtherTeams - 1) / 2 + 1 + i;
+			if (team == "Montreal") {
+				System.out.println(startVToEnd);
+			}
+			FlowEdge finalEdges = new FlowEdge(startVToEnd, graph.V()-1, 
+					win[nameMap.get(team)] + remain[nameMap.get(team)]- win[otherTeams.get(i)]);
+			graph.addEdge(finalEdges);
+		}
+		return graph;
+	}
+	
+	
+	public Iterable<String> certificateOfElimination(String team) {
+		// subset R of teams that eliminates given team; null if not eliminated
+		ArrayList<Integer> otherTeams = (ArrayList<Integer>) notEliminatedTeams.clone();
+		otherTeams.remove(nameMap.get(team));
+		FlowNetwork g = constructGraph(team, otherTeams);
+		FordFulkerson ff = new FordFulkerson(g, 0, g.V() - 1);
+		ArrayList<String> cOfElimination= new ArrayList<String>();
+		for (int i = 0; i < otherTeams.size(); i++) {
+			int teamVertex = g.V() - 1 - otherTeams.size() + i;
+			if (ff.inCut(teamVertex)) {
+				cOfElimination.add(teamName[otherTeams.get(i)]);
+			}
+		}
+		return cOfElimination;
+	}
+	
+	public static void main(String[] args) {
+	    BaseballElimination division = new BaseballElimination(args[0]);
+	    for (String team : division.teams()) {
+	        if (division.isEliminated(team)) {
+	            StdOut.print(team + " is eliminated by the subset R = { ");
+	            for (String t : division.certificateOfElimination(team)) {
+	                StdOut.print(t + " ");
+	            }
+	            StdOut.println("}");
+	        }
+	        else {
+	            StdOut.println(team + " is not eliminated");
+	        }
+	    }
+	}
+	
+}

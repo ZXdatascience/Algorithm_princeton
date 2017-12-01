@@ -1,0 +1,129 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf100
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset134 PingFangSC-Regular;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 1. Mincut problem\
+Input: An edge-weighted digraph (positive capacity), source vertex s, target vertex t.\
+\
+Def: A st-cut\
+St-cut is a partition of the vertices into two disjoint sets. Which s in one set and t in the other.\
+\
+The capacity of the st-cut is the sum of the capacities of the edges from A to B\
+\
+Mincut problem: find a cut of minimum capacity.\
+\
+2. Maxflow problem \
+Def: an st-flow is an assignment of values to the edges such that:\
+* Capacity constraint: 0 <= edge\'92s flow <= edge\'92s capacity\
+* Local equilibrium: inflow  = outflow at every vertex (except s and t)\
+\
+The value of a flow is the inflow at t.\
+Max st-flow problem: Find a flow of maximum value.\
+\
+!!! These two problems are actually the same.\
+\
+3. Ford-Fulkerson algorithm\
+Idea : increase flow along augmenting paths.\
+\
+Augmenting path. Find an undirected path from s to t such that
+\f1 :
+\f0 \
+* can increase flow on forward edges (Not full).\
+* can decrease flow on backward edge (Not empty).\
+It is important to maintain the local equilibrium through the process.\
+\
+Termination: All paths from s to t are blocked by either a:\
+* Full forward edge.\
+* Empty backward edge.\
+\
+The algorithm\
+1). Start with 0 flow.\
+2). While there exists an augmenting path:\
+ - find an augmenting path\
+ - compute bottleneck capacity\
+ - increase flow on that path by bottleneck capacity\
+\
+4. Theory\
+Def. The net flow across a cut(A, B) is the sum of the flows on its edges from A to B minus the sum of the flows on its edges from B to A.\
+\
+Flow-value lemma. \
+Let f be any flow and let(A,B) be any cut. Then, the net flow across (A, B) equals the value of f.\
+\
+Pf: \
+By induction on the size of B.\
+Base case: B = \{t\}\
+Induction step: remains true by local equilibrium when moving any vertex from A to B.\
+\
+Corollary: Outflow from s == inflow to t == value of flow.\
+\
+Weak duality:\
+Let f be any flow and let (A,B) be any cut\
+Then, the value of the flow <= the capacity of the cut.\
+\
+Augmenting path theorem.\
+A flow f is a maxflow iff no augmenting paths.\
+Maxflow-mincut theorem.\
+Value of the maxflow  = capacity of minicut.\
+\
+Pf: \
+These 3 conditions are equivalent for any flow f\
+1). There exists a cut whose capacity equals the value of the flow f.\
+2). F is a maxflow.\
+3). There is no augmenting path with respect to f.\
+\
+5. Running time\
+\
+For integer-valued flow and capacity: following holds:\
+Number of augmenting paths <= the value of the maxflow. \
+\
+This is the special case that the # of augmenting paths == the value of maxflow.\
+	{{\NeXTGraphic Pasted Graphic.tiff \width10600 \height6640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\
+\
+So to fix this, use shortest/ fastest path to avoid this situation.\
+\
+FF performance depends on choice of augment paths.\
+\
+6. Java implementation\
+Flow edge data type:   Associate flow fe and capacity ce with edge e = v to w\
+Flow network data type: Need to process edge in either direction. \
+This means to include e in both v and w\'92s adjacency lists.\
+\
+Residual capacity\
+* Forward edge: residual capacity = ce- fe\
+* Backward edge: residual capacity = fe\
+\
+Augment flow\
+* Forward edge: add delta .\
+* Backward edge: subtract delta\
+\
+1. Convert the original network into a residual network.\
+ *** Augmenting path in original network is equivalent to directed path in residual network.\
+\
+2. Class FlowEdge\
+\
+3. Class FlowNetwork\
+	   void addEdge(FlowEdge e) (** remember you should add both v and e\'92s adj list)\
+	   Iterable<FlowEdge> adj(int v)\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+ \
+\
+\
+\
+\
+\
+}
